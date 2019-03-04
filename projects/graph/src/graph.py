@@ -139,20 +139,13 @@ class Graph:
         paths = {starting_vertex_id: [starting_vertex_id]}
 
         while q.size() > 0:
-
-        # Add all edges of given vertex to queue
             v = q.dequeue()
             for neighbor in self.vertices[v]:
                 if neighbor not in paths:
-                # for i in self.vertices[queue[0]]:
-
-                # If vertex has not been visited, cache its path
-                # if i not in paths:
                     paths[neighbor] = list(paths[v])
                     paths[neighbor].append(neighbor)
                     q.enqueue(neighbor)
 
-                        # If vertex matches target, return target
                     if neighbor == target:
                         print(paths[neighbor])
                         return paths[neighbor]
