@@ -1,4 +1,6 @@
 import random
+from itertools import combinations
+from collections import deque
 
 
 class User:
@@ -53,10 +55,7 @@ class SocialGraph:
         for i in range(numUsers):
             self.addUser(f'User {i + 1}')
         # Create friendships
-        possible_friendships = []
-        for userId in self.users:
-            for friendId in range(userId+1, self.lastID + 1):
-                possible_friendships.append((userId, friendId))
+        possible_friendships = list(combinations(range(1, numUsers + 1), 2))
         random.shuffle(possible_friendships)
         total_friendships = numUsers * avgFriendships
         possible_friendships = possible_friendships[:total_friendships]
@@ -73,9 +72,16 @@ class SocialGraph:
 
         The key is the friend's ID and the value is the path.
         """
-        visited = {}  # Note that this is a dictionary, not a set
+        visited = {userID: [userID]}  # Note that this is a dictionary, not a set
         # !!!! IMPLEMENT ME
-
+        queue = [userID]
+        while len(queue) > 0:
+            current = queue.pop(0)
+            for user in self.friendships[current]:
+                if user not in visited:
+                    visited[user] = list(visited[current])
+                    visited[user].append(user)
+                    queue.append(user)
         return visited
 
 
