@@ -57,7 +57,7 @@ class SocialGraph:
         for i in range(numUsers):
             self.addUser(f'User {i + 1}')
         # Create friendships
-        possible_friendships = list(combinations(range(1, numUsers + 1), avgFriendships))
+        possible_friendships = list(combinations(range(1, numUsers + 1), 2))
         random.shuffle(possible_friendships)
         total_friendships = numUsers * avgFriendships
         possible_friendships = possible_friendships[:total_friendships]
