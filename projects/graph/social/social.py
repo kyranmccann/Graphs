@@ -74,33 +74,38 @@ class SocialGraph:
         """
         visited = {}  # Note that this is a dictionary, not a set
         # !!!! IMPLEMENT ME
-        # queue = [userID]
-        # while len(queue) > 0:
-        #     current = queue.pop(0)
-        #     for user in self.friendships[current]:
-        #         if user not in visited:
-        #             visited[user] = list(visited[current])
-        #             visited[user].append(user)
-        #             queue.append(user)
-        # return visited
-
-        for user in self.users:
-            visited[user] = self.bfs(userID, user)
+        visited[userID] = [userID]
+        queue = [userID]
+        while len(queue) > 0:
+            current = queue.pop(0)
+            for user in self.friendships[current]:
+                if user not in visited:
+                    visited[user] = list(visited[current])
+                    visited[user].append(user)
+                    queue.append(user)
         return visited
 
-    def bfs(self, start, target):
-        q = deque()
-        visited = {}
-        q.append(start)
-
-        while len(q) > 0:
-            current = q.popleft()
-            if current not in visited:
-                visited[current] = current
-                if current == target:
-                    return current
-                for friend in self.friendships[current]:
-                    q.append(friend)
+    #     for friend in self.users:
+    #         if not friend == userID:
+    #             path = self.bfs(userID, friend)
+    #             if path:
+    #                 visited[friend] = path
+    #     return visited
+    #
+    # def bfs(self, start, target):
+    #     q = deque()
+    #     visited = {}
+    #     q.append(start)
+    #
+    #     while len(q) > 0:
+    #         current = q.popleft()
+    #         if current not in visited:
+    #             visited[current] = current
+    #             if current == target:
+    #                 return current
+    #             for friend in self.friendships[current]:
+    #                 q.append(friend)
+    #     return visited
 
 
 if __name__ == '__main__':
