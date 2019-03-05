@@ -19,6 +19,7 @@ class SocialGraph:
         """
         Creates a bi-directional friendship
         """
+
         if userID == friendID:
             print("WARNING: You cannot be friends with yourself")
         elif friendID in self.friendships[userID] or userID in self.friendships[friendID]:
@@ -26,6 +27,7 @@ class SocialGraph:
         else:
             self.friendships[userID].add(friendID)
             self.friendships[friendID].add(userID)
+
 
     def addUser(self, name):
         """
@@ -55,7 +57,7 @@ class SocialGraph:
         for i in range(numUsers):
             self.addUser(f'User {i + 1}')
         # Create friendships
-        possible_friendships = list(combinations(range(1, numUsers + 1), 2))
+        possible_friendships = list(combinations(range(1, numUsers + 1), avgFriendships))
         random.shuffle(possible_friendships)
         total_friendships = numUsers * avgFriendships
         possible_friendships = possible_friendships[:total_friendships]
@@ -110,7 +112,26 @@ class SocialGraph:
 
 if __name__ == '__main__':
     sg = SocialGraph()
-    sg.populateGraph(10, 2)
-    print(sg.friendships)
+    sg.populateGraph(1000, 5)
+    # print(sg.friendships)
     connections = sg.getAllSocialPaths(1)
-    print(connections)
+    connections2 = sg.getAllSocialPaths(5)
+    connections3 = sg.getAllSocialPaths(10)
+    connections4 = sg.getAllSocialPaths(100)
+    connections5 = sg.getAllSocialPaths(200)
+    connections6 = sg.getAllSocialPaths(233)
+    connections7 = sg.getAllSocialPaths(267)
+    connections8 = sg.getAllSocialPaths(300)
+    connections9 = sg.getAllSocialPaths(400)
+    connections10 = sg.getAllSocialPaths(999)
+    # print(connections)
+    print(len(connections)/1000)
+    print(len(connections2)/1000)
+    print(len(connections3)/1000)
+    print(len(connections4)/1000)
+    print(len(connections5)/1000)
+    print(len(connections6)/1000)
+    print(len(connections7)/1000)
+    print(len(connections8)/1000)
+    print(len(connections9)/1000)
+    print(len(connections10)/1000)
