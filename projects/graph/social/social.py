@@ -72,17 +72,35 @@ class SocialGraph:
 
         The key is the friend's ID and the value is the path.
         """
-        visited = {userID: [userID]}  # Note that this is a dictionary, not a set
+        visited = {}  # Note that this is a dictionary, not a set
         # !!!! IMPLEMENT ME
-        queue = [userID]
-        while len(queue) > 0:
-            current = queue.pop(0)
-            for user in self.friendships[current]:
-                if user not in visited:
-                    visited[user] = list(visited[current])
-                    visited[user].append(user)
-                    queue.append(user)
+        # queue = [userID]
+        # while len(queue) > 0:
+        #     current = queue.pop(0)
+        #     for user in self.friendships[current]:
+        #         if user not in visited:
+        #             visited[user] = list(visited[current])
+        #             visited[user].append(user)
+        #             queue.append(user)
+        # return visited
+
+        for user in self.users:
+            visited[user] = self.bfs(userID, user)
         return visited
+
+    def bfs(self, start, target):
+        q = deque()
+        visited = {}
+        q.append(start)
+
+        while len(q) > 0:
+            current = q.popleft()
+            if current not in visited:
+                visited[current] = current
+                if current == target:
+                    return current
+                for friend in self.friendships[current]:
+                    q.append(friend)
 
 
 if __name__ == '__main__':
