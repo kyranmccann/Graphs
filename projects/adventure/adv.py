@@ -4,6 +4,7 @@ from world import World
 
 import random
 
+
 # Load world
 world = World()
 
@@ -18,13 +19,26 @@ roomGraph={494: [(1, 8), {'e': 457}], 492: [(1, 20), {'e': 400}], 493: [(2, 5), 
 world.loadGraph(roomGraph)
 player = Player("Name", world.startingRoom)
 
-
-
-
 # FILL THIS IN
-traversalPath = ['n', 's']
+traversalPath = []
 
+# keep track of the visited rooms
+# add the current room to the visited rooms (with the exits from the room's method getExits())
+# keep track of the paths to go backwards
 
+# while all the rooms have not been visited
+    # if the player's current room is not in visited
+        # add the current room and its exits to visited
+        # remove the last thing in the path to go backwards from the list of exits (you have already been in that direction - it was the last room you were in)
+    # while there are no unexplored exits available for a room and there are things in the path backwards
+        # pop the last thing off of the backwards path to use as your next move
+        # add the new move to the traversal path
+        # move in that direction
+    # when there are unexplored exits available for a room, grab the last one in the list
+
+    #add the opposite of your move to the backwards path so you can go back
+    # add the new move to the backwards path
+    # move that way
 
 
 
