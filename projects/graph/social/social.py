@@ -14,12 +14,13 @@ class SocialGraph:
         self.lastID = 0
         self.users = {}
         self.friendships = {}
+        self.count = 0
 
     def addFriendship(self, userID, friendID):
         """
         Creates a bi-directional friendship
         """
-
+        self.count += 1
         if userID == friendID:
             print("WARNING: You cannot be friends with yourself")
         elif friendID in self.friendships[userID] or userID in self.friendships[friendID]:
@@ -27,7 +28,7 @@ class SocialGraph:
         else:
             self.friendships[userID].add(friendID)
             self.friendships[friendID].add(userID)
-
+        print(self.count)
 
     def addUser(self, name):
         """
@@ -59,7 +60,7 @@ class SocialGraph:
         # Create friendships
         possible_friendships = list(combinations(range(1, numUsers + 1), 2))
         random.shuffle(possible_friendships)
-        total_friendships = numUsers * avgFriendships
+        total_friendships = numUsers * avgFriendships // 2
         possible_friendships = possible_friendships[:total_friendships]
         for friendship in possible_friendships:
             self.addFriendship(friendship[0], friendship[1])
@@ -77,6 +78,8 @@ class SocialGraph:
         visited = {}  # Note that this is a dictionary, not a set
         # !!!! IMPLEMENT ME
         visited[userID] = [userID]
+        all_paths = []
+        total_paths = 0
         queue = [userID]
         while len(queue) > 0:
             current = queue.pop(0)
@@ -85,6 +88,11 @@ class SocialGraph:
                     visited[user] = list(visited[current])
                     visited[user].append(user)
                     queue.append(user)
+        for friend in visited:
+            all_paths.append(len(visited[friend]))
+        for path in all_paths:
+            total_paths += path
+        print(total_paths/len(visited))
         return visited
 
     #     for friend in self.users:
@@ -113,7 +121,7 @@ class SocialGraph:
 if __name__ == '__main__':
     sg = SocialGraph()
     sg.populateGraph(1000, 5)
-    # print(sg.friendships)
+    print(sg.friendships)
     connections = sg.getAllSocialPaths(1)
     connections2 = sg.getAllSocialPaths(5)
     connections3 = sg.getAllSocialPaths(10)
@@ -125,6 +133,7 @@ if __name__ == '__main__':
     connections9 = sg.getAllSocialPaths(400)
     connections10 = sg.getAllSocialPaths(999)
     # print(connections)
+    print(len(connections2))
     print(len(connections)/1000)
     print(len(connections2)/1000)
     print(len(connections3)/1000)
