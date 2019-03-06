@@ -23,22 +23,37 @@ player = Player("Name", world.startingRoom)
 traversalPath = []
 
 # keep track of the visited rooms
+visited = {}
 # add the current room to the visited rooms (with the exits from the room's method getExits())
+visited[player.currentRoom.id] = player.currentRoom.getExits()
 # keep track of the paths to go backwards
+backwards = []
 
 # while all the rooms have not been visited
+while len(visited) < 499:
     # if the player's current room is not in visited
+    if player.currentRoom.id not in visited:
         # add the current room and its exits to visited
+        visited[player.currentRoom.id] = player.currentRoom.getExits()
         # remove the last thing in the path to go backwards from the list of exits (you have already been in that direction - it was the last room you were in)
+        visited[player.currentRoom.id].remove(backwards[-1])
     # while there are no unexplored exits available for a room and there are things in the path backwards
+    while len(visited[player.currentRoom.id]) == 0 and len(backwards) > 0:
         # pop the last thing off of the backwards path to use as your next move
+        go_back = backwards.pop()
         # add the new move to the traversal path
+        traversalPath.append(go_back)
         # move in that direction
+        player.travel(go_back)
     # when there are unexplored exits available for a room, grab the last one in the list
-
-    #add the opposite of your move to the backwards path so you can go back
+    move = visited[player.currentRoom.id].pop()
+    # add the opposite of your move to the backwards path so you can go back
+    opposites = {'n': 's', 's': 'n', 'e': 'w', 'w': 'e'}
+    backwards.append(opposites[move])
     # add the new move to the backwards path
+    traversalPath.append(move)
     # move that way
+    player.travel(move)
 
 
 
