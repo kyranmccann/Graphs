@@ -1,6 +1,7 @@
 from room import Room
 from player import Player
 from world import World
+from collections import deque
 
 import random
 
@@ -58,56 +59,154 @@ player = Player("Name", world.startingRoom)
 #     player.travel(move)
 
 """Second solution follows the instructions and builds a dictionary with the relationships between rooms"""
-traversalPath = []
-# keep track of the visited rooms
-visited = {}
-# use the current room's getExits method to find the possible exits
-possible_exits = player.currentRoom.getExits()
-# for each possible exit, place a question mark placeholder
-visited[player.currentRoom.id] = {possible_exits[i]: '?' for i in range(0, len(possible_exits))}
-# keep track of the paths to go backwards
-backwards = []
+# traversalPath = []
+# # keep track of the visited rooms
+# visited = {}
+# # use the current room's getExits method to find the possible exits
+# possible_exits = player.currentRoom.getExits()
+# # for each possible exit, place a question mark placeholder
+# visited[player.currentRoom.id] = {possible_exits[i]: '?' for i in range(0, len(possible_exits))}
+# # keep track of the paths to go backwards
+# backwards = []
+#
+# # while all the rooms have not been visited
+# while len(visited) < 499:
+#     # if the player's current room is not in visited
+#     if player.currentRoom.id not in visited:
+#         # add the current room and its exits (with question marks) to visited
+#         exits = player.currentRoom.getExits()
+#         visited[player.currentRoom.id] = {exits[i]: '?' for i in range(0, len(exits))}
+#         # if there is a room from before this, set the direction you came from to that room using the room's getRoomInDirection method.
+#         visited[player.currentRoom.id][backwards[-1]] = player.currentRoom.getRoomInDirection(backwards[-1])
+#     # find out what unexplored exits are available
+#     available_exits = []
+#     for exit, room in visited[player.currentRoom.id].items():
+#         if room == '?':
+#             available_exits.append(exit)
+#     # while there are no unexplored exits available for a room and there are things in the path backwards
+#     while len(available_exits) == 0 and len(backwards) > 0:
+#         # pop the last thing off of the backwards path to use as your next move
+#         go_back = backwards.pop()
+#         # add the new move to the traversal path
+#         traversalPath.append(go_back)
+#         # move in that direction
+#         player.travel(go_back)
+#         # find out how many exits are available in the room you just backtracked to
+#         new_exits = []
+#         for exit, room in visited[player.currentRoom.id].items():
+#             if room == '?':
+#                 new_exits.append(exit)
+#         # reset availabe_exits to the current room's available exists (to break out of the while loop when a room has exits)
+#         available_exits = new_exits
+#     # set the next move as the last available exit in the list
+#     move = available_exits.pop()
+#     # set the prepared move's exit to the room in that direction (using the room's getRoomInDirection method) to prepare to move that way
+#     visited[player.currentRoom.id][move] = player.currentRoom.getRoomInDirection(move)
+#     # add the opposite of your move to the backwards path so you can go back
+#     opposites = {'n': 's', 's': 'n', 'e': 'w', 'w': 'e'}
+#     backwards.append(opposites[move])
+#     # add the new move to the traversalPath
+#     traversalPath.append(move)
+#     # move that way
+#     player.travel(move)
 
-# while all the rooms have not been visited
-while len(visited) < 499:
-    # if the player's current room is not in visited
+"""Third solution attempting to get traversalPath under 1000"""
+# dictionary for go_back directions
+opposites = {'n': 's', 's': 'n', 'e': 'w', 'w': 'e'}
+
+
+# search function for finding the best way back to a room with available exits
+def search_back(currentID, target):
+    queue = [currentID]
+
+    path_back = {currentID:[]}
+
+    while len(queue) > 0:
+        for i in visited[queue[0]]:
+            path = visited[queue[0]][i]
+            if path not in path_back:
+                path_back[path] = list(path_back[queue[0]])
+                path_back[path].append(i)
+                queue.append(path)
+                if path == target:
+                    return path_back[path]
+        queue.pop(0)
+
+
+# keep dictionary of exits that have not been explored
+available_exits = {}
+# add the current room's exits to available_exits
+available_exits[player.currentRoom.id] = player.currentRoom.getExits()
+# keep track of the way back (now just for removing that exit from the new room)
+backwards = []
+# keep track of moves made
+traversalPath = []
+# keep track of rooms with available exits
+available_rooms = []
+
+# keep track of visited (for the seach_back)
+visited = {}
+visited[player.currentRoom.id] = {}
+
+# keep last room
+last_room = player.currentRoom.id
+
+# while there are unvisited rooms
+while len(list(available_exits)) < 499:
+
+    # add the current room to visited
     if player.currentRoom.id not in visited:
-        # add the current room and its exits (with question marks) to visited
-        exits = player.currentRoom.getExits()
-        visited[player.currentRoom.id] = {exits[i]: '?' for i in range(0, len(exits))}
-        # if there is a room from before this, set the direction you came from to that room using the room's getRoomInDirection method.
-        visited[player.currentRoom.id][backwards[-1]] = player.currentRoom.getRoomInDirection(backwards[-1])
-    # find out what unexplored exits are available
-    available_exits = []
-    for exit, room in visited[player.currentRoom.id].items():
-        if room == '?':
-            available_exits.append(exit)
-    # while there are no unexplored exits available for a room and there are things in the path backwards
-    while len(available_exits) == 0 and len(backwards) > 0:
-        # pop the last thing off of the backwards path to use as your next move
-        go_back = backwards.pop()
-        # add the new move to the traversal path
-        traversalPath.append(go_back)
-        # move in that direction
-        player.travel(go_back)
-        # find out how many exits are available in the room you just backtracked to
-        new_exits = []
-        for exit, room in visited[player.currentRoom.id].items():
-            if room == '?':
-                new_exits.append(exit)
-        # reset availabe_exits to the current room's available exists (to break out of the while loop when a room has exits)
-        available_exits = new_exits
-    # set the current room's last available exit to the room in that direction (using the room's getRoomInDirection method) to prepare to move that way
-    visited[player.currentRoom.id][available_exits[-1]] = player.currentRoom.getRoomInDirection(available_exits[-1])
-    # set the next move as the last available exit in the list
-    move = available_exits.pop()
-    # add the opposite of your move to the backwards path so you can go back
-    opposites = {'n': 's', 's': 'n', 'e': 'w', 'w': 'e'}
+        visited[player.currentRoom.id] = {}
+
+    # add current room's exits to available_exits (remove the last available exit)
+    if player.currentRoom.id not in available_exits:
+        available_exits[player.currentRoom.id] = player.currentRoom.getExits()
+        available_exits[player.currentRoom.id].remove(backwards[-1])
+
+    # take the current room out of available rooms if it's there
+    elif player.currentRoom.id in available_rooms:
+        available_rooms.remove(player.currentRoom.id)
+
+    # if there aren't any available exits and you've already been places
+    if len(available_exits[player.currentRoom.id]) == 0 and len(backwards) > 0:
+        # get the last one with available exits
+        last_available = available_rooms.pop()
+        # use the search to find the way from here to last available
+        shortest = search_back(player.currentRoom.id, last_available)
+        # while there's still a path from search_back
+        while len(shortest) > 0:
+            # grab the first move
+            go_back = shortest.pop(0)
+            # add it to total moves
+            traversalPath.append(go_back)
+            # move that way
+            player.travel(go_back)
+    # set last room to this room
+    last_room = player.currentRoom.id
+
+    # get ready to move to the first available exit in the room
+    move = available_exits[player.currentRoom.id].pop(0)
+    # add the opposite move to backwards
     backwards.append(opposites[move])
-    # add the new move to the traversalPath
+    # add move to the traversalPath
     traversalPath.append(move)
     # move that way
     player.travel(move)
+
+    # if there are visits still available in the last room
+    if len(available_exits[last_room]) > 0:
+        # add the room to available_rooms
+        available_rooms.append(last_room)
+
+    # if the current room isn't in visited, add it
+    if player.currentRoom.id not in visited:
+        visited[player.currentRoom.id] = {}
+
+    # add the connections in visited
+    visited[last_room][move] = player.currentRoom.id
+    visited[player.currentRoom.id][opposites[move]] = last_room
+
+
 
 # TRAVERSAL TEST
 visited_rooms = set()
@@ -118,7 +217,7 @@ for move in traversalPath:
     visited_rooms.add(player.currentRoom)
 
 if len(visited_rooms) == len(roomGraph):
-    print(f"TESTS PASSED: {len(traversalPath)} moves, {len(visited_rooms)} rooms visited")
+    print(f"TESTS PASSED: {len(traversalPath)} traversalPath, {len(visited_rooms)} rooms visited")
 else:
     print("TESTS FAILED: INCOMPLETE TRAVERSAL")
     print(f"{len(roomGraph) - len(visited_rooms)} unvisited rooms")
