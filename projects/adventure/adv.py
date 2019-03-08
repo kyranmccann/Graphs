@@ -119,7 +119,7 @@ opposites = {'n': 's', 's': 'n', 'e': 'w', 'w': 'e'}
 def search_back(currentID, target):
     queue = [currentID]
 
-    path_back = {currentID:[]}
+    path_back = {currentID: []}
 
     while len(queue) > 0:
         for i in visited[queue[0]]:
@@ -205,7 +205,6 @@ while len(list(available_exits)) < 499:
     # add the connections in visited
     visited[last_room][move] = player.currentRoom.id
     visited[player.currentRoom.id][opposites[move]] = last_room
-
 
 
 # TRAVERSAL TEST
